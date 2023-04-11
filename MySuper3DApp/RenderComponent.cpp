@@ -120,16 +120,26 @@ void RenderComponent::Draw()
 			1.0f,
 			0.09f,
 			0.032f,
-			Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition(),
+			Vector3
+			(
+				1,
+				15,
+				1
+			),
 			modelComponent->material.ambient,
 			modelComponent->material.diffuse,
-			modelComponent->material.specular,
+			modelComponent->material.specular
 		}
 	};
 	D3D11_MAPPED_SUBRESOURCE secondMappedResource;
 	Game::GetInstance()->GetRenderSystem()->context->Map(constBuffer[1], 0, D3D11_MAP_WRITE_DISCARD, 0, &secondMappedResource);
 	memcpy(secondMappedResource.pData, &lightData, sizeof(LightData));
 	Game::GetInstance()->GetRenderSystem()->context->Unmap(constBuffer[1], 0);
+
+	std::cout << " X: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().x
+			  << " Y: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().y
+			  << " Z: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().z
+		      << std::endl;
 
 	const ShadowData lightShadowData
 	{

@@ -111,6 +111,7 @@ void Game::Update()
 
 void Game::Draw()
 {
+	Game::GetInstance()->GetRenderSystem()->context->ClearState();
 	renderShadows->PrepareFrame();
 	renderShadows->Draw();
 	renderShadows->EndFrame();

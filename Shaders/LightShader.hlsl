@@ -60,9 +60,9 @@ PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
  
-    output.pos = mul(mul(mul(float4(input.pos, 1.0f), curCamera.model), curCamera.view), curCamera.projection); // положение vertex'а относительно model мира и viewProjection основной камеры
+    output.pos    = mul(mul(mul(float4(input.pos, 1.0f), curCamera.model), curCamera.view), curCamera.projection); // положение vertex'а относительно model мира и viewProjection основной камеры
     output.normal = mul(transpose(curCamera.model), input.normal);
-    output.tex = input.tex;
+    output.tex    = input.tex;
     
     float4 modelPos = mul(float4(input.pos, 1.0f), curCamera.model);
     output.modelPos = modelPos;
@@ -78,7 +78,7 @@ SamplerState Sampler                    : register(s0);
 Texture2DArray ShadowMap                : register(t1);
 SamplerComparisonState ShadowMapSampler : register(s1);
 
-float3 CalcDirLight(DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 posViewProj, float layer);
+float3 CalcDirLight(float4 modelPos, DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 posViewProj, float layer);
 
 float4 PSMain(PS_IN input) : SV_Target
 {
@@ -98,30 +98,44 @@ float4 PSMain(PS_IN input) : SV_Target
     
     float4 dirLightViewProj = mul(input.modelPos, ViewProj[layer]);
     
-    float3 result = CalcDirLight(dirLight, normal, viewDir, input.tex, dirLightViewProj, layer);
+    float3 result = CalcDirLight(input.modelPos, dirLight, normal, viewDir, input.tex, dirLightViewProj, layer);
 
     return float4(result, 1.0f);
 }
 
 float IsLighted(float3 lightDir, float3 normal, float4 dirLightViewProj, float layer);
 
-float3 CalcDirLight(DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 dirLightViewProj, float layer)
+float3 CalcDirLight(float4 modelPos, DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 dirLightViewProj, float layer)
 {
-    float3 diffValue = DiffuseMap.Sample(Sampler, tex).rgb; 
-    float3 lightDir = normalize(- dirLight.direction);
-    float  diff = max(dot(normal, lightDir), 0.0);
+    float3 diffValue  = DiffuseMap.Sample(Sampler, tex).rgb; 
+    
+    // DIRECTIONAL LIGHT
+    float3 lightDir   = normalize( - dirLight.direction);
+    float  diff       = max(dot(normal, lightDir), 0.0);
     float3 reflectDir = reflect( - lightDir, normal);
-    float  spec = pow(max(dot(viewDir, reflectDir), 0.0), 128);
-    float3 ambient  = dirLight.ambient * diffValue;
-    float3 diffuse  = dirLight.diffuse * diff * diffValue;
-    float3 specular = dirLight.specular * spec * diffValue;
+    float  spec       = pow(max(dot(viewDir, reflectDir), 0.0), 128);
+    
+    //float3 ambient = dirLight.ambient * diffValue;
+    //float3 diffuse = dirLight.diffuse * diff * diffValue;
+    //float3 specular = dirLight.specular * spec * diffValue;
+    
+    // POINT LIGHT
+    float distance = length(poiLight.poiPosition - modelPos.xyz);
+    float attenuation = 1.0f / (poiLight.poiConstant + poiLight.poiLinear * distance + poiLight.poiQuadratic * (distance * distance));
+    
+    //ambient  += ambient * attenuation;
+    //diffuse  += diffuse * attenuation;
+    //specular += specular * attenuation;
+    
+    float3 ambient  = dirLight.ambient         * diffValue * attenuation;
+    float3 diffuse  = dirLight.diffuse  * diff * diffValue * attenuation;
+    float3 specular = dirLight.specular * spec * diffValue * attenuation;
     
     float1 isLighted = 1;   
     isLighted = IsLighted(lightDir, normal, dirLightViewProj, layer);
     
     return (ambient + (diffuse + specular) * isLighted);
 }
-
 
 float IsLighted(float3 lightDir, float3 normal, float4 dirLightViewProj, float layer)
 {

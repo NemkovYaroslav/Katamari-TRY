@@ -43,12 +43,12 @@ void KatamariDamacyGame::Initialize()
 
 	GameObject* pointLight = new GameObject();
 	pointLight->CreateMesh(0.2f, "../Textures/LampAlbedo.png", "../Models/lamp.obj");
-	pointLight->transformComponent->SetPosition(Vector3(5, 1, 0));
-	PointLightComponent* pointLightComponent = new PointLightComponent(1.0f, 0.09f, 0.032f, DirectX::XM_PIDIV2, 0.1f, 100.0f);
+	pointLight->transformComponent->SetPosition(Vector3(15, 1, 15));
+	PointLightComponent* pointLightComponent = new PointLightComponent(1.0f, 0.09f, 0.032f);
 	pointLight->AddComponent(pointLightComponent);
 	Game::GetInstance()->pointLight = pointLightComponent;
-	pointLight->modelComponent->material.ambient = { 0.2f, 0.5f, 0.1f };
-	pointLight->modelComponent->material.diffuse = { 0.2f, 0.5f, 0.1f };
+	pointLight->modelComponent->material.ambient  = { 0.2f, 0.5f, 0.1f };
+	pointLight->modelComponent->material.diffuse  = { 0.2f, 0.5f, 0.1f };
 	pointLight->modelComponent->material.specular = { 0.2f, 0.5f, 0.1f };
 
 	Game::GetInstance()->AddGameObject(ground);      // 0
