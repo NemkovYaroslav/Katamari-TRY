@@ -43,7 +43,6 @@ void KatamariDamacyGame::Initialize()
 	Game::GetInstance()->AddGameObject(camera);      // 1
 	Game::GetInstance()->AddGameObject(katamari);    // 2
 	Game::GetInstance()->AddGameObject(removeLight); // 3
-	Game::GetInstance()->AddGameObject(pointLight);  // 4
 
 	GameObject* statue = new GameObject();
 	statue->CreateMesh(0.02f, "../Textures/bull.jpg", "../Models/bull.obj");
