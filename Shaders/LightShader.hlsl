@@ -10,27 +10,28 @@ cbuffer CameraConstantBuffer : register(b0)
     CurrentCameraData curCamera;
 };
 
-struct DirectionalLightData
+struct MaterialData
 {
-    float3 direction;
     float3 ambient;
     float3 diffuse;
     float3 specular;
 };
+struct DirectionalLightData
+{
+    float3 lightColor;
+    float3 direction;
+};
 struct PointLightData
 {
-    float  poiConstant;
-    float  poiLinear;
-    float  poiQuadratic;
-    float3 poiPosition;
-    float3 poiAmbient;
-    float3 poiDiffuse;
-    float3 poiSpecular;
+    float3 lightColor;
+    float3 valueConLinQuad;
+    float3 position;
 };
 cbuffer LightConstantBuffer : register(b1)
 {
+    MaterialData         material;
     DirectionalLightData dirLight;
-    PointLightData       poiLight;
+    PointLightData       poiLight[2];
 };
 
 cbuffer LightCameraConstantBuffer : register(b2)
@@ -78,7 +79,7 @@ SamplerState Sampler                    : register(s0);
 Texture2DArray ShadowMap                : register(t1);
 SamplerComparisonState ShadowMapSampler : register(s1);
 
-float3 CalcDirLight(float4 modelPos, DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 posViewProj, float layer);
+float3 CalcDirLight(float4 modelPos, MaterialData material, float3 normal, float3 viewDir, float2 tex, float4 posViewProj, float layer);
 
 float4 PSMain(PS_IN input) : SV_Target
 {
@@ -98,14 +99,14 @@ float4 PSMain(PS_IN input) : SV_Target
     
     float4 dirLightViewProj = mul(input.modelPos, ViewProj[layer]);
     
-    float3 result = CalcDirLight(input.modelPos, dirLight, normal, viewDir, input.tex, dirLightViewProj, layer);
+    float3 result = CalcDirLight(input.modelPos, material, normal, viewDir, input.tex, dirLightViewProj, layer);
 
     return float4(result, 1.0f);
 }
 
 float IsLighted(float3 lightDir, float3 normal, float4 dirLightViewProj, float layer);
 
-float3 CalcDirLight(float4 modelPos, DirectionalLightData dirLight, float3 normal, float3 viewDir, float2 tex, float4 dirLightViewProj, float layer)
+float3 CalcDirLight(float4 modelPos, MaterialData material, float3 normal, float3 viewDir, float2 tex, float4 dirLightViewProj, float layer)
 {
     float3 diffValue  = DiffuseMap.Sample(Sampler, tex).rgb; 
     
@@ -115,23 +116,22 @@ float3 CalcDirLight(float4 modelPos, DirectionalLightData dirLight, float3 norma
     float3 reflectDir = reflect( - lightDir, normal);
     float  spec       = pow(max(dot(viewDir, reflectDir), 0.0), 128);
     
-    //float3 ambient = dirLight.ambient * diffValue;
-    //float3 diffuse = dirLight.diffuse * diff * diffValue;
-    //float3 specular = dirLight.specular * spec * diffValue;
+    float3 ambient  = material.ambient         * diffValue * dirLight.lightColor;
+    float3 diffuse  = material.diffuse  * diff * diffValue;
+    float3 specular = material.specular * spec * diffValue;
     
-    // POINT LIGHT
-    float distance = length(poiLight.poiPosition - modelPos.xyz);
-    float attenuation = 1.0f / (poiLight.poiConstant + poiLight.poiLinear * distance + poiLight.poiQuadratic * (distance * distance));
+    // POINT LIGHTS
+    for (int i = 0; i < 2; i++)
+    {
+        float distance = length(poiLight[i].position - modelPos.xyz);
+        float attenuation = 1.0f / (poiLight[i].valueConLinQuad.x + poiLight[i].valueConLinQuad.y * distance + poiLight[i].valueConLinQuad.z * (distance * distance));
+        
+        ambient  += ambient  * attenuation * poiLight[i].lightColor;
+        diffuse  += diffuse  * attenuation * poiLight[i].lightColor;
+        specular += specular * attenuation * poiLight[i].lightColor;
+    }
     
-    //ambient  += ambient * attenuation;
-    //diffuse  += diffuse * attenuation;
-    //specular += specular * attenuation;
-    
-    float3 ambient  = dirLight.ambient         * diffValue * attenuation;
-    float3 diffuse  = dirLight.diffuse  * diff * diffValue * attenuation;
-    float3 specular = dirLight.specular * spec * diffValue * attenuation;
-    
-    float1 isLighted = 1;   
+    float1 isLighted = 1;
     isLighted = IsLighted(lightDir, normal, dirLightViewProj, layer);
     
     return (ambient + (diffuse + specular) * isLighted);

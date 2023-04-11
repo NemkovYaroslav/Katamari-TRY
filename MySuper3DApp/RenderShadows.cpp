@@ -116,9 +116,9 @@ RenderShadows::RenderShadows()
 void RenderShadows::PrepareFrame()
 {
 	Game::GetInstance()->GetRenderSystem()->context->RSSetState(sRastState.Get());
-	Game::GetInstance()->GetRenderSystem()->context->OMSetRenderTargets(0, nullptr, Game::GetInstance()->removeLight->depthStencilView.Get());
-	Game::GetInstance()->GetRenderSystem()->context->RSSetViewports(1, Game::GetInstance()->removeLight->viewport.get());
-	Game::GetInstance()->GetRenderSystem()->context->ClearDepthStencilView(Game::GetInstance()->removeLight->depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	Game::GetInstance()->GetRenderSystem()->context->OMSetRenderTargets(0, nullptr, Game::GetInstance()->directionalLight->depthStencilView.Get());
+	Game::GetInstance()->GetRenderSystem()->context->RSSetViewports(1, Game::GetInstance()->directionalLight->viewport.get());
+	Game::GetInstance()->GetRenderSystem()->context->ClearDepthStencilView(Game::GetInstance()->directionalLight->depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void RenderShadows::Draw()

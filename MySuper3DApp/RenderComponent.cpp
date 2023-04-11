@@ -16,32 +16,34 @@ RenderComponent::RenderComponent(ModelComponent* modelComponent)
 
 struct alignas(16) CameraData
 {
-	Matrix view;
-	Matrix projection;
-	Matrix model;
-	Vector3 cameraPosition;
+	Matrix  camView;
+	Matrix  camProjection;
+	Matrix  objModel;
+	Vector3 camPosition;
+};
+
+struct MaterialData
+{
+	Vector4 matAmbient;
+	Vector4 matDiffuse;
+	Vector4 matSpecular;
 };
 struct DirectionalLightData
 {
-	Vector4 Direction;
-	Vector4 Ambient;
-	Vector4 Diffuse;
-	Vector4 Specular;
+	Vector4 dirLightColor;
+	Vector4 dirDirection;
 };
 struct PointLightData
 {
-	float constant;
-	float linear;
-	float quadratic;
-	Vector3 Position;
-	Vector4 Ambient;
-	Vector4 Diffuse;
-	Vector4 Specular;
+	Vector4 poiLightColor;
+	Vector4 poiConstLinearQuadValue;
+	Vector4 poiPosition;
 };
 struct alignas(16) LightData
 {
+	MaterialData         MatData;
 	DirectionalLightData RemLight;
-	PointLightData PointLight;
+	PointLightData       PoiLight[2];
 };
 
 struct alignas(16) ShadowData
@@ -87,10 +89,7 @@ void RenderComponent::Initialize()
 	assert(SUCCEEDED(result));
 }
 
-void RenderComponent::Update(float deltaTime)
-{	
-
-}
+void RenderComponent::Update(float deltaTime) {}
 
 void RenderComponent::Draw()
 {
@@ -108,27 +107,28 @@ void RenderComponent::Draw()
 
 	const LightData lightData
 	{
-		DirectionalLightData
+		MaterialData
 		{
-			Game::GetInstance()->removeLight->direction,
 			modelComponent->material.ambient,
 			modelComponent->material.diffuse,
 			modelComponent->material.specular
 		},
+		DirectionalLightData
+		{
+			Game::GetInstance()->directionalLight->lightColor,
+			Game::GetInstance()->directionalLight->direction
+		},
 		PointLightData
 		{
-			1.0f,
-			0.09f,
-			0.032f,
-			Vector3
-			(
-				1,
-				15,
-				1
-			),
-			modelComponent->material.ambient,
-			modelComponent->material.diffuse,
-			modelComponent->material.specular
+			Game::GetInstance()->pointLight0->lightColor,
+			Vector4(1.0f, 0.09f, 0.032f, 0.0f),
+			Vector4(Game::GetInstance()->pointLight0->gameObject->transformComponent->GetPosition())
+		},
+		PointLightData
+		{
+			Game::GetInstance()->pointLight1->lightColor,
+			Vector4(1.0f, 0.09f, 0.032f, 0.0f),
+			Vector4(Game::GetInstance()->pointLight1->gameObject->transformComponent->GetPosition())
 		}
 	};
 	D3D11_MAPPED_SUBRESOURCE secondMappedResource;
@@ -136,20 +136,15 @@ void RenderComponent::Draw()
 	memcpy(secondMappedResource.pData, &lightData, sizeof(LightData));
 	Game::GetInstance()->GetRenderSystem()->context->Unmap(constBuffer[1], 0);
 
-	std::cout << " X: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().x
-			  << " Y: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().y
-			  << " Z: " << Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition().z
-		      << std::endl;
-
 	const ShadowData lightShadowData
 	{
 		{
-			Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(1),
-			Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(3)
+			Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(1),
+			Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(3)
 		}, //
 		{
-			Game::GetInstance()->removeLight->shadowCascadeLevels.at(0),         Game::GetInstance()->removeLight->shadowCascadeLevels.at(1),
-			Game::GetInstance()->removeLight->shadowCascadeLevels.at(2),         Game::GetInstance()->removeLight->shadowCascadeLevels.at(3)
+			Game::GetInstance()->directionalLight->shadowCascadeLevels.at(0),         Game::GetInstance()->directionalLight->shadowCascadeLevels.at(1),
+			Game::GetInstance()->directionalLight->shadowCascadeLevels.at(2),         Game::GetInstance()->directionalLight->shadowCascadeLevels.at(3)
 		} //
 	};
 	D3D11_MAPPED_SUBRESOURCE thirdMappedResource;
@@ -160,7 +155,7 @@ void RenderComponent::Draw()
 	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(0, 1, modelComponent->textureView.GetAddressOf());
 	Game::GetInstance()->GetRenderSystem()->context->PSSetSamplers(0, 1, Game::GetInstance()->GetRenderSystem()->samplerState.GetAddressOf());
 
-	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(1, 1, Game::GetInstance()->removeLight->textureResourceView.GetAddressOf());
+	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(1, 1, Game::GetInstance()->directionalLight->textureResourceView.GetAddressOf());
 	Game::GetInstance()->GetRenderSystem()->context->PSSetSamplers(1, 1, Game::GetInstance()->GetRenderShadowsSystem()->sSamplerState.GetAddressOf());
 
 	Game::GetInstance()->GetRenderSystem()->context->RSSetState(Game::GetInstance()->GetRenderSystem()->rastState.Get());

@@ -39,13 +39,13 @@ void RenderShadowsComponent::Update(float deltaTime)
 
 void RenderShadowsComponent::Draw()
 {
-	Game::GetInstance()->removeLight->lightViewProjectionMatrices = Game::GetInstance()->removeLight->GetLightSpaceMatrices();
+	Game::GetInstance()->directionalLight->lightViewProjectionMatrices = Game::GetInstance()->directionalLight->GetLightSpaceMatrices();
 	const CascadeData cascadeData
 	{
 		gameObject->transformComponent->GetModel(),
 		{ 
-			Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(1),
-		    Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(3)
+			Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(1),
+		    Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->directionalLight->lightViewProjectionMatrices.at(3)
 		} //
 	};
 	D3D11_MAPPED_SUBRESOURCE firstMappedResource;

@@ -35,8 +35,9 @@ public:
 	std::shared_ptr<RenderShadows> renderShadows;
 
 	CameraComponent* currentCamera;
-	DirectionalLightComponent* removeLight;
-	PointLightComponent* pointLight;
+	DirectionalLightComponent* directionalLight;
+	PointLightComponent*       pointLight0;
+	PointLightComponent*       pointLight1;
 	std::vector<GameObject*> gameObjects;
 
 	void Run();

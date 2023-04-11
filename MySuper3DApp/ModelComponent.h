@@ -20,7 +20,7 @@ public:
     struct Material
     {
         Vector4 ambient { Vector3(0.5f, 0.5f, 0.5f) };
-        Vector4 diffuse { Vector3(0.2f, 0.5f, 0.9f) };
+        Vector4 diffuse { Vector3(0.5f, 0.5f, 0.5f) };
         Vector4 specular{ Vector3(1.0f, 1.0f, 1.0f) };
     };
     Material material;
