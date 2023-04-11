@@ -17,11 +17,13 @@ public:
 
     virtual void Initialize() override;
 
-    float ambientStrength = 1.0f;
-    Vector3 lightColor{ Vector3(0.5f, 0.5f, 0.5f) };
-    Vector4 ambient   { ambientStrength * lightColor };
-    Vector4 diffuse   { Vector3(0.2f, 0.5f, 0.9f) };
-    Vector4 specular  { Vector3(1.0f, 1.0f, 1.0f) };
+    struct Material
+    {
+        Vector4 ambient { Vector3(0.5f, 0.5f, 0.5f) };
+        Vector4 diffuse { Vector3(0.2f, 0.5f, 0.9f) };
+        Vector4 specular{ Vector3(1.0f, 1.0f, 1.0f) };
+    };
+    Material material;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
     std::vector<Vector4> points;

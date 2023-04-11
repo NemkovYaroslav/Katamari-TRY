@@ -29,13 +29,13 @@ struct RemLightData
 };
 struct PointLightData
 {
+	float constant;
+	float linear;
+	float quadratic;
 	Vector4 Position;
 	Vector4 Ambient;
 	Vector4 Diffuse;
 	Vector4 Specular;
-	float constant;
-	float linear;
-	float quadratic;
 };
 struct alignas(16) LightData
 {
@@ -110,19 +110,19 @@ void RenderComponent::Draw()
 		RemLightData
 		{
 			Game::GetInstance()->currentLight->direction,
-			modelComponent->ambient,
-			modelComponent->diffuse,
-			modelComponent->specular
+			modelComponent->material.ambient,
+			modelComponent->material.diffuse,
+			modelComponent->material.specular
 		},
 		PointLightData
 		{
-			Vector4(Game::GetInstance()->gameObjects.at(2)->transformComponent->GetPosition()),
-			modelComponent->ambient,
-			modelComponent->diffuse,
-			modelComponent->specular,
 			1.0f,
 			0.09f,
-			0.032f
+			0.032f,
+			Vector4(),
+			modelComponent->material.ambient,
+			modelComponent->material.diffuse,
+			modelComponent->material.specular,
 		}
 	};
 	D3D11_MAPPED_SUBRESOURCE secondMappedResource;

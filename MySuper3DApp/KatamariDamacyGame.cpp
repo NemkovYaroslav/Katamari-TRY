@@ -4,6 +4,7 @@
 #include "CameraControllerComponent.h"
 #include "KatamariControllerComponent.h"
 #include "DirectionalLightComponent.h"
+#include "ModelComponent.h"
 
 KatamariDamacyGame::KatamariDamacyGame(LPCWSTR name, int clientWidth, int clientHeight) : Game(name, clientWidth, clientHeight)
 {
@@ -24,6 +25,9 @@ void KatamariDamacyGame::Initialize()
 	katamariController->katamariSpeed = 5.0f;
 	katamari->AddComponent(katamariController);
 	katamari->transformComponent->SetPosition(Vector3(0.0f, 1.0f, 15.0f));
+	katamari->modelComponent->material.ambient = { 0.2f, 0.5f, 0.1f };
+	katamari->modelComponent->material.diffuse = { 0.2f, 0.5f, 0.1f };
+	katamari->modelComponent->material.specular = { 0.2f, 0.5f, 0.1f };
 
 	GameObject* camera = new GameObject();
 	CameraComponent* cameraComponent = new CameraComponent();

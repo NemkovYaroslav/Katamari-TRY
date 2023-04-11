@@ -101,13 +101,7 @@ float3 CalcDirLight(RemLight remLight, float3 normal, float3 viewDir, float2 tex
     float1 isLighted = 1;   
     isLighted = IsLighted(lightDir, normal, posViewProj, layer);
     
-    float3 addColor = float3(0.0f, 0.0f, 0.0f);
-    if (layer == 0) { addColor = float3(0.2f, 0.0f, 0.0f); }
-    if (layer == 1) { addColor = float3(0.0f, 0.2f, 0.0f); }
-    if (layer == 2) { addColor = float3(0.0f, 0.0f, 0.2f); }
-    if (layer == 3) { addColor = float3(0.2f, 0.2f, 0.2f); }
-    
-    return (addColor + ambient + (diffuse + specular) * isLighted);
+    return (ambient + (diffuse + specular) * isLighted);
 }
 
 
