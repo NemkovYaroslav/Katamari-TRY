@@ -26,9 +26,6 @@ void KatamariDamacyGame::Initialize()
 	katamariController->katamariSpeed = 5.0f;
 	katamari->AddComponent(katamariController);
 	katamari->transformComponent->SetPosition(Vector3(0.0f, 1.0f, 15.0f));
-	katamari->modelComponent->material.ambient  = { 0.2f, 0.5f, 0.1f };
-	katamari->modelComponent->material.diffuse  = { 0.2f, 0.5f, 0.1f };
-	katamari->modelComponent->material.specular = { 0.2f, 0.5f, 0.1f };
 
 	GameObject* camera = new GameObject();
 	CameraComponent* cameraComponent = new CameraComponent();
@@ -50,6 +47,9 @@ void KatamariDamacyGame::Initialize()
 	PointLightComponent* pointLightComponent = new PointLightComponent(1.0f, 0.09f, 0.032f, DirectX::XM_PIDIV2, 0.1f, 100.0f);
 	pointLight->AddComponent(pointLightComponent);
 	Game::GetInstance()->pointLight = pointLightComponent;
+	pointLight->modelComponent->material.ambient = { 0.2f, 0.5f, 0.1f };
+	pointLight->modelComponent->material.diffuse = { 0.2f, 0.5f, 0.1f };
+	pointLight->modelComponent->material.specular = { 0.2f, 0.5f, 0.1f };
 
 	Game::GetInstance()->AddGameObject(ground);      // 0
 	Game::GetInstance()->AddGameObject(camera);      // 1
