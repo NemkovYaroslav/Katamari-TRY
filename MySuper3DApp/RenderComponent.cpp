@@ -7,6 +7,7 @@
 #include "RenderSystem.h"
 #include "GameObject.h"
 #include "RenderShadows.h"
+#include "PointLightComponent.h"
 
 RenderComponent::RenderComponent(ModelComponent* modelComponent)
 {
@@ -20,7 +21,7 @@ struct alignas(16) CameraData
 	Matrix model;
 	Vector3 cameraPosition;
 };
-struct RemLightData
+struct DirectionalLightData
 {
 	Vector4 Direction;
 	Vector4 Ambient;
@@ -32,14 +33,14 @@ struct PointLightData
 	float constant;
 	float linear;
 	float quadratic;
-	Vector4 Position;
+	Vector3 Position;
 	Vector4 Ambient;
 	Vector4 Diffuse;
 	Vector4 Specular;
 };
 struct alignas(16) LightData
 {
-	RemLightData RemLight;
+	DirectionalLightData RemLight;
 	PointLightData PointLight;
 };
 
@@ -107,9 +108,9 @@ void RenderComponent::Draw()
 
 	const LightData lightData
 	{
-		RemLightData
+		DirectionalLightData
 		{
-			Game::GetInstance()->currentLight->direction,
+			Game::GetInstance()->removeLight->direction,
 			modelComponent->material.ambient,
 			modelComponent->material.diffuse,
 			modelComponent->material.specular
@@ -119,7 +120,7 @@ void RenderComponent::Draw()
 			1.0f,
 			0.09f,
 			0.032f,
-			Vector4(),
+			Game::GetInstance()->pointLight->gameObject->transformComponent->GetPosition(),
 			modelComponent->material.ambient,
 			modelComponent->material.diffuse,
 			modelComponent->material.specular,
@@ -133,12 +134,12 @@ void RenderComponent::Draw()
 	const ShadowData lightShadowData
 	{
 		{
-			Game::GetInstance()->currentLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->currentLight->lightViewProjectionMatrices.at(1),
-			Game::GetInstance()->currentLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->currentLight->lightViewProjectionMatrices.at(3)
+			Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(0), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(1),
+			Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(2), Game::GetInstance()->removeLight->lightViewProjectionMatrices.at(3)
 		}, //
 		{
-			Game::GetInstance()->currentLight->shadowCascadeLevels.at(0),         Game::GetInstance()->currentLight->shadowCascadeLevels.at(1),
-			Game::GetInstance()->currentLight->shadowCascadeLevels.at(2),         Game::GetInstance()->currentLight->shadowCascadeLevels.at(3)
+			Game::GetInstance()->removeLight->shadowCascadeLevels.at(0),         Game::GetInstance()->removeLight->shadowCascadeLevels.at(1),
+			Game::GetInstance()->removeLight->shadowCascadeLevels.at(2),         Game::GetInstance()->removeLight->shadowCascadeLevels.at(3)
 		} //
 	};
 	D3D11_MAPPED_SUBRESOURCE thirdMappedResource;
@@ -149,7 +150,7 @@ void RenderComponent::Draw()
 	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(0, 1, modelComponent->textureView.GetAddressOf());
 	Game::GetInstance()->GetRenderSystem()->context->PSSetSamplers(0, 1, Game::GetInstance()->GetRenderSystem()->samplerState.GetAddressOf());
 
-	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(1, 1, Game::GetInstance()->currentLight->textureResourceView.GetAddressOf());
+	Game::GetInstance()->GetRenderSystem()->context->PSSetShaderResources(1, 1, Game::GetInstance()->removeLight->textureResourceView.GetAddressOf());
 	Game::GetInstance()->GetRenderSystem()->context->PSSetSamplers(1, 1, Game::GetInstance()->GetRenderShadowsSystem()->sSamplerState.GetAddressOf());
 
 	Game::GetInstance()->GetRenderSystem()->context->RSSetState(Game::GetInstance()->GetRenderSystem()->rastState.Get());

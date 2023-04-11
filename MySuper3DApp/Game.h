@@ -8,6 +8,7 @@ class RenderShadows;
 class GameObject;
 class CameraComponent;
 class DirectionalLightComponent;
+class PointLightComponent;
 
 class Game
 {
@@ -34,7 +35,8 @@ public:
 	std::shared_ptr<RenderShadows> renderShadows;
 
 	CameraComponent* currentCamera;
-	DirectionalLightComponent* currentLight;
+	DirectionalLightComponent* removeLight;
+	PointLightComponent* pointLight;
 	std::vector<GameObject*> gameObjects;
 
 	void Run();

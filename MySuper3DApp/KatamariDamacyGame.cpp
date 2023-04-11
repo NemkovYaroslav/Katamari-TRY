@@ -3,8 +3,9 @@
 #include "CameraComponent.h"
 #include "CameraControllerComponent.h"
 #include "KatamariControllerComponent.h"
-#include "DirectionalLightComponent.h"
 #include "ModelComponent.h"
+#include "DirectionalLightComponent.h"
+#include "PointLightComponent.h"
 
 KatamariDamacyGame::KatamariDamacyGame(LPCWSTR name, int clientWidth, int clientHeight) : Game(name, clientWidth, clientHeight)
 {
@@ -25,8 +26,8 @@ void KatamariDamacyGame::Initialize()
 	katamariController->katamariSpeed = 5.0f;
 	katamari->AddComponent(katamariController);
 	katamari->transformComponent->SetPosition(Vector3(0.0f, 1.0f, 15.0f));
-	katamari->modelComponent->material.ambient = { 0.2f, 0.5f, 0.1f };
-	katamari->modelComponent->material.diffuse = { 0.2f, 0.5f, 0.1f };
+	katamari->modelComponent->material.ambient  = { 0.2f, 0.5f, 0.1f };
+	katamari->modelComponent->material.diffuse  = { 0.2f, 0.5f, 0.1f };
 	katamari->modelComponent->material.specular = { 0.2f, 0.5f, 0.1f };
 
 	GameObject* camera = new GameObject();
@@ -41,12 +42,20 @@ void KatamariDamacyGame::Initialize()
 	GameObject* removeLight = new GameObject();
 	DirectionalLightComponent* directionalLightComponent = new DirectionalLightComponent(1024, 40.0f, 40.0f, 0.1f, 200.0f);
 	removeLight->AddComponent(directionalLightComponent);
-	Game::GetInstance()->currentLight = directionalLightComponent;
+	Game::GetInstance()->removeLight = directionalLightComponent;
+
+	GameObject* pointLight = new GameObject();
+	pointLight->CreateMesh(0.2f, "../Textures/LampAlbedo.png", "../Models/lamp.obj");
+	pointLight->transformComponent->SetPosition(Vector3(5, 1, 0));
+	PointLightComponent* pointLightComponent = new PointLightComponent(1.0f, 0.09f, 0.032f, DirectX::XM_PIDIV2, 0.1f, 100.0f);
+	pointLight->AddComponent(pointLightComponent);
+	Game::GetInstance()->pointLight = pointLightComponent;
 
 	Game::GetInstance()->AddGameObject(ground);      // 0
 	Game::GetInstance()->AddGameObject(camera);      // 1
 	Game::GetInstance()->AddGameObject(katamari);    // 2
 	Game::GetInstance()->AddGameObject(removeLight); // 3
+	Game::GetInstance()->AddGameObject(pointLight);  // 4
 
 	GameObject* statue = new GameObject();
 	statue->CreateMesh(0.02f, "../Textures/bull.jpg", "../Models/bull.obj");

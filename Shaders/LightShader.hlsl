@@ -34,22 +34,25 @@ struct VS_IN
 struct PS_IN
 {
     float4 pos : SV_POSITION;
-    float4 modelPos : POSITION;
-    float4 lightViewPosition : POSITION1;
     float4 normal : NORMAL;
     float2 tex : TEXCOORD;
+    
+    float4 modelPos : POSITION;
+    float4 lightViewPosition : POSITION1;
 };
 
 PS_IN VSMain(VS_IN input)
 {
     PS_IN output = (PS_IN) 0;
  
-    float4 modelPos = mul(float4(input.pos, 1.0f), model);
-    output.pos = mul(mul(modelPos, view), projection);
-    output.modelPos = modelPos;
-    output.lightViewPosition = mul(modelPos, view);
+    output.pos = mul(mul(mul(float4(input.pos, 1.0f), model), view), projection); // положение vertex'а относительно model мира и viewProjection основной камеры
     output.normal = mul(transpose(model), input.normal);
     output.tex = input.tex;
+    
+    float4 modelPos = mul(float4(input.pos, 1.0f), model);
+    output.modelPos = modelPos;
+    
+    output.lightViewPosition = mul(modelPos, view);
     
     return output;
 }

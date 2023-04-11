@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "CameraComponent.h"
 #include "DirectionalLightComponent.h"
+#include "PointLightComponent.h"
 
 Game* Game::instance = nullptr;
 
@@ -21,7 +22,8 @@ Game::Game(LPCWSTR name, int clientWidth, int clientHeight)
 	startTime = std::make_shared<std::chrono::time_point<std::chrono::steady_clock>>();
 	prevTime = std::make_shared<std::chrono::time_point<std::chrono::steady_clock>>();
 	currentCamera = nullptr;
-	currentLight  = nullptr;
+	removeLight = nullptr;
+	pointLight = nullptr;
 }
 Game* Game::CreateInstance(LPCWSTR name, int screenWidth, int screenHeight)
 {
