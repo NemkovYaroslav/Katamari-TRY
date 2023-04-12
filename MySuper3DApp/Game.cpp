@@ -23,8 +23,6 @@ Game::Game(LPCWSTR name, int clientWidth, int clientHeight)
 	prevTime = std::make_shared<std::chrono::time_point<std::chrono::steady_clock>>();
 	currentCamera = nullptr;
 	directionalLight = nullptr;
-	pointLight0 = nullptr;
-	pointLight1 = nullptr;
 }
 Game* Game::CreateInstance(LPCWSTR name, int screenWidth, int screenHeight)
 {

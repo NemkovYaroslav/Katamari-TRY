@@ -45,23 +45,23 @@ void KatamariDamacyGame::Initialize()
 	pointLight0->CreateMesh(0.2f, "../Textures/LampAlbedo.png", "../Models/lamp.obj");
 	pointLight0->transformComponent->SetPosition(Vector3(15, 1, 15));
 	PointLightComponent* pointLightComponent0 = new PointLightComponent(1.0f, 0.09f, 0.032f);
+	pointLightComponent0->lightColor = { 1.0f, 0.0f, 0.0f };
 	pointLight0->AddComponent(pointLightComponent0);
-	Game::GetInstance()->pointLight0 = pointLightComponent0;
-	Game::GetInstance()->pointLight0->lightColor = { 1.0f, 0.0f, 0.0f };
 	pointLight0->modelComponent->material.ambient  = { 1.0f, 1.0f, 1.0f };
 	pointLight0->modelComponent->material.diffuse  = { 1.0f, 1.0f, 1.0f };
 	pointLight0->modelComponent->material.specular = { 1.0f, 1.0f, 1.0f };
+	Game::GetInstance()->pointLights->push_back(pointLightComponent0);
 
 	GameObject* pointLight1 = new GameObject();
 	pointLight1->CreateMesh(0.2f, "../Textures/LampAlbedo.png", "../Models/lamp.obj");
-	pointLight1->transformComponent->SetPosition(Vector3(-15, 1, -15));
+	pointLight1->transformComponent->SetPosition(Vector3(-15, 1, 15));
 	PointLightComponent* pointLightComponent1 = new PointLightComponent(1.0f, 0.09f, 0.032f);
+	pointLightComponent1->lightColor = { 1.0f, 1.0f, 0.0f };
 	pointLight1->AddComponent(pointLightComponent1);
-	Game::GetInstance()->pointLight1 = pointLightComponent1;
-	Game::GetInstance()->pointLight1->lightColor = { 1.0f, 1.0f, 0.0f };
 	pointLight1->modelComponent->material.ambient  = { 1.0f, 1.0f, 1.0f };
 	pointLight1->modelComponent->material.diffuse  = { 1.0f, 1.0f, 1.0f };
 	pointLight1->modelComponent->material.specular = { 1.0f, 1.0f, 1.0f };
+	Game::GetInstance()->pointLights->push_back(pointLightComponent1);
 
 	Game::GetInstance()->AddGameObject(ground);      // 0
 	Game::GetInstance()->AddGameObject(camera);      // 1

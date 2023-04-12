@@ -105,32 +105,21 @@ void RenderComponent::Draw()
 	memcpy(firstMappedResource.pData, &cameraData, sizeof(CameraData));
 	Game::GetInstance()->GetRenderSystem()->context->Unmap(constBuffer[0], 0);
 
-	const LightData lightData
+	LightData lightData {};
+	// MATERIAL
+	lightData.MatData.matAmbient  = modelComponent->material.ambient;
+	lightData.MatData.matDiffuse  = modelComponent->material.diffuse;
+	lightData.MatData.matSpecular = modelComponent->material.specular;
+	// DIRECTIONAL LIGHT
+	lightData.RemLight.dirLightColor = Game::GetInstance()->directionalLight->lightColor;
+	lightData.RemLight.dirDirection  = Game::GetInstance()->directionalLight->direction;
+	// POINT LIGHTS
+	for (int i = 0; i < Game::GetInstance()->pointLights->size(); i++)
 	{
-		MaterialData
-		{
-			modelComponent->material.ambient,
-			modelComponent->material.diffuse,
-			modelComponent->material.specular
-		},
-		DirectionalLightData
-		{
-			Game::GetInstance()->directionalLight->lightColor,
-			Game::GetInstance()->directionalLight->direction
-		},
-		PointLightData
-		{
-			Game::GetInstance()->pointLight0->lightColor,
-			Vector4(1.0f, 0.09f, 0.032f, 0.0f),
-			Vector4(Game::GetInstance()->pointLight0->gameObject->transformComponent->GetPosition())
-		},
-		PointLightData
-		{
-			Game::GetInstance()->pointLight1->lightColor,
-			Vector4(1.0f, 0.09f, 0.032f, 0.0f),
-			Vector4(Game::GetInstance()->pointLight1->gameObject->transformComponent->GetPosition())
-		}
-	};
+		lightData.PoiLight[i].poiLightColor           = Game::GetInstance()->pointLights->at(i)->lightColor;
+		lightData.PoiLight[i].poiConstLinearQuadValue = Vector4(1.0f, 0.09f, 0.032f, 0.0f);
+		lightData.PoiLight[i].poiPosition             = Vector4(Game::GetInstance()->pointLights->at(i)->gameObject->transformComponent->GetPosition());
+	}
 	D3D11_MAPPED_SUBRESOURCE secondMappedResource;
 	Game::GetInstance()->GetRenderSystem()->context->Map(constBuffer[1], 0, D3D11_MAP_WRITE_DISCARD, 0, &secondMappedResource);
 	memcpy(secondMappedResource.pData, &lightData, sizeof(LightData));

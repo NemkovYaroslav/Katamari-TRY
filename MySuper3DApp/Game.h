@@ -36,8 +36,7 @@ public:
 
 	CameraComponent* currentCamera;
 	DirectionalLightComponent* directionalLight;
-	PointLightComponent*       pointLight0;
-	PointLightComponent*       pointLight1;
+	std::vector<PointLightComponent*> pointLights[2];
 	std::vector<GameObject*> gameObjects;
 
 	void Run();
