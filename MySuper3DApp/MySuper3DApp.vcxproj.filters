@@ -180,16 +180,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shaders\MyVeryFirstShader.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\Shaders\LightShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\Katamari TEXTURE\Shaders\TextureShader.hlsl">
+    <FxCompile Include="..\Shaders\DepthShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\Shaders\DepthShader.hlsl">
+    <FxCompile Include="..\..\Katamari DEF\Shaders\DepthShader.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Katamari DEF\Shaders\DepthLighting.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -36,7 +36,7 @@ struct DirectionalLightData
 struct PointLightData
 {
 	Vector4 poiLightColor;
-	Vector4 poiConstLinearQuadValue;
+	Vector4 poiConstLinearQuadCount;
 	Vector4 poiPosition;
 };
 struct alignas(16) LightData
@@ -117,7 +117,7 @@ void RenderComponent::Draw()
 	for (int i = 0; i < Game::GetInstance()->pointLights->size(); i++)
 	{
 		lightData.PoiLight[i].poiLightColor           = Game::GetInstance()->pointLights->at(i)->lightColor;
-		lightData.PoiLight[i].poiConstLinearQuadValue = Vector4(1.0f, 0.09f, 0.032f, 0.0f);
+		lightData.PoiLight[i].poiConstLinearQuadCount = Vector4(1.0f, 0.09f, 0.032f, 2.0f);
 		lightData.PoiLight[i].poiPosition             = Vector4(Game::GetInstance()->pointLights->at(i)->gameObject->transformComponent->GetPosition());
 	}
 	D3D11_MAPPED_SUBRESOURCE secondMappedResource;

@@ -24,7 +24,7 @@ struct DirectionalLightData
 struct PointLightData
 {
     float3 lightColor;
-    float3 valueConLinQuad;
+    float4 valueConLinQuadCount;
     float3 position;
 };
 cbuffer LightConstantBuffer : register(b1)
@@ -121,11 +121,10 @@ float3 CalcDirLight(float4 modelPos, MaterialData material, float3 normal, float
     float3 specular = material.specular * spec * diffValue;
     
     // POINT LIGHTS
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < poiLight[i].valueConLinQuadCount.w; i++)
     {
         float distance = length(poiLight[i].position - modelPos.xyz);
-        float attenuation = 1.0f / (poiLight[i].valueConLinQuad.x + poiLight[i].valueConLinQuad.y * distance + poiLight[i].valueConLinQuad.z * (distance * distance));
-        
+        float attenuation = 1.0f / (poiLight[i].valueConLinQuadCount.x + poiLight[i].valueConLinQuadCount.y * distance + poiLight[i].valueConLinQuadCount.z * (distance * distance));
         ambient  += ambient  * attenuation * poiLight[i].lightColor;
         diffuse  += diffuse  * attenuation * poiLight[i].lightColor;
         specular += specular * attenuation * poiLight[i].lightColor;
